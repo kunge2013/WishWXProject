@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<application port="6161">     
+<application port="9000">     
     
     <!--  详细配置说明见： http://redkale.org/redkale.html#redkale_confxml  -->
     
@@ -10,7 +10,7 @@
         
     </resources> 
         
-    <server protocol="HTTP" host="0.0.0.0" port="6060">  
+    <server protocol="HTTP" host="0.0.0.0" port="8080">  
     
         <request>
             <remoteaddr value="request.headers.X-RemoteAddress"/>
@@ -26,11 +26,11 @@
         </response>
         <services autoload="true" />  
         <filters autoload="true" />  
-       <!--  <rest path="/pipes" base="com.squrab.wish.base.BaseServlet" autoload="true" excludes="^.*\.member\..*$;^.*\.custom\..*$"/>
-        <rest path="/pipes" base="com.squrab.wish.sys.UserMemberServlet" autoload="true" includes="^.*\.member\..*$"/> includes="^.*\.goods\..*$" -->
+       <!--  <rest path="/wxpipes" base="com.squrab.wish.base.BaseServlet" autoload="true" excludes="^.*\.member\..*$;^.*\.custom\..*$"/>
+        <rest path="/wxpipes" base="com.squrab.wish.sys.UserMemberServlet" autoload="true" includes="^.*\.member\..*$"/> includes="^.*\.goods\..*$" -->
        
-       <!-- <rest path="/pipes" base="com.squrab.wish.customer.CustomerServlet" autoload="true"/> -->
- 		<rest path="/pipes" base="com.squrab.wish.customer.CustomerServlet" autoload="true">
+       <!-- <rest path="/wxpipes" base="com.squrab.wish.customer.CustomerServlet" autoload="true"/> -->
+ 		<rest path="/wxpipes" base="com.squrab.wish.customer.CustomerServlet" autoload="true">
         	<service  value = "com.squrab.wish.customer.CustomerService"/>
         	<service  value = "com.squrab.wish.banner.BannerService"/>
         	<service  value = "com.squrab.wish.goods.GoodsService"/>
@@ -40,7 +40,7 @@
         	<service  value = "com.squrab.wish.goods.WishlistService"/>
         </rest> 
         
-      <!--   <rest path="/pipes" base="com.squrab.wish.merchant.MerchantServlet" autoload="true">
+      <!--   <rest path="/wxpipes" base="com.squrab.wish.merchant.MerchantServlet" autoload="true">
         	<service  value = "com.squrab.wish.merchant.MerchantService"/>
         	<service  value = "com.squrab.wish.banner.BannerService"/>
         	<service  value = "com.squrab.wish.goods.GoodsService"/>
@@ -48,15 +48,15 @@
         	<service  value = "com.squrab.wish.goods.LabelService"/>
         </rest> -->
         
-        <servlets path="/pipes" autoload="true" />  
+        <servlets path="/wxpipes" autoload="true" />  
         
     </server>
     
-    <server protocol="SNCP" host="0.0.0.0" port="20710">  
+    <server protocol="SNCP" host="0.0.0.0" port="20730">  
         <services autoload="true" />  
     </server>
     
-    <server protocol="WATCH" host="0.0.0.0" port="20910">      
+    <server protocol="WATCH" host="0.0.0.0" port="20930">      
         <services autoload="true" />              
         <filters autoload="true" /> 
     </server>
