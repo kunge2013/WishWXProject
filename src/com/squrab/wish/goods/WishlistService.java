@@ -19,8 +19,8 @@ import com.squrab.wish.model.Wishlist;
 public class WishlistService extends CrudBaseService<Customer, Wishlist, WishlistBean> {
 
 	@RestMapping(name = "create", auth = false, comment = "新增")
-	public RetResult<Integer> create(Customer userMember, Wishlist bean) {
-		bean.setCustomerid(userMember.getCustomerid());
+	public RetResult<Integer> create(Customer customer, Wishlist bean) {
+		bean.setCustomerid(customer.getCustomerid());
 		if (!(bean.getGoodsid() > 0)) bean.setCreatetime(System.currentTimeMillis());
 		return RetCodes.retResult(RetCodes.RET_WISHLIST_EXISTENCE_ILLEGAL); // 心愿清单已存在
 	}
@@ -42,23 +42,23 @@ public class WishlistService extends CrudBaseService<Customer, Wishlist, Wishlis
 	@Override
 	@Comment("分页查询")
 	@RestMapping(name = "query", auth = false, comment = "查询列表")
-	protected RetResult<Sheet<Wishlist>> queryForPage(Customer userMember, Flipper flipper, WishlistBean bean) {
+	protected RetResult<Sheet<Wishlist>> queryForPage(Customer customer, Flipper flipper, WishlistBean bean) {
 		// TODO Auto-generated method stub
-		return super.queryForPage(userMember, flipper, bean);
+		return super.queryForPage(customer, flipper, bean);
 	}
 	
 	@Override
 	@RestMapping(name = "queryById", auth = false, comment = "根据ID加载数据")
-	public RetResult<Wishlist> queryById(Customer userMember, int id) {
+	public RetResult<Wishlist> queryById(Customer customer, int id) {
 		// TODO Auto-generated method stub
-		return super.queryById(userMember, id);
+		return super.queryById(customer, id);
 	}
 	
 	@Override
 	@RestMapping(name = "delete", auth = false, comment = "删除")
-	public RetResult<Integer> delete(Customer userMember, int id) {
+	public RetResult<Integer> delete(Customer customer, int id) {
 		// TODO Auto-generated method stub
-		return super.delete(userMember, id);
+		return super.delete(customer, id);
 	}
 	/**
 	 *	判断当前对象是保存还是更新

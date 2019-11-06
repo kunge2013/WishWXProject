@@ -46,9 +46,9 @@ public class GiftBasketService extends CrudBaseService<Customer, GiftBasket, Gif
 	}
 	
 	@RestMapping(name = "query", auth = false, comment = "查询礼物篮")
-	protected RetResult<Sheet<GiftBasket>> queryForPage(Customer userMember, Flipper flipper, GiftBasketBean bean) {
-		//		bean.setCustomerid(userMember.getCustomerid());
-		return super.queryForPage(userMember, flipper, bean);
+	protected RetResult<Sheet<GiftBasket>> queryForPage(Customer customer, Flipper flipper, GiftBasketBean bean) {
+		//		bean.setCustomerid(customer.getCustomerid());
+		return super.queryForPage(customer, flipper, bean);
 	}
 	
 	

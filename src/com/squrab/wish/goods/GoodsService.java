@@ -47,9 +47,9 @@ public class GoodsService extends CrudBaseService<Customer, Goods, GoodsBean> {
 	
 	@Override
 	@RestMapping(name = "create", auth = false, comment = "新增")
-	public RetResult<Integer> create(Customer userMember, Goods bean) {
+	public RetResult<Integer> create(Customer customer, Goods bean) {
 		// TODO Auto-generated method stub
-		return super.create(userMember, bean);
+		return super.create(customer, bean);
 	}
 	
 	@Override
@@ -66,27 +66,27 @@ public class GoodsService extends CrudBaseService<Customer, Goods, GoodsBean> {
 	
 	@Comment("查询")
 	@RestMapping(name = "query", auth = true, /* actionid = Services.ACTION_QUERY, */ comment = "查询角色列表")
-	public RetResult<Sheet<Goods>> queryForPage(Customer userMember, Flipper flipper, GoodsBean bean) {
+	public RetResult<Sheet<Goods>> queryForPage(Customer customer, Flipper flipper, GoodsBean bean) {
 		// TODO Auto-generated method stub
-		return super.queryForPage(userMember, flipper, bean);
+		return super.queryForPage(customer, flipper, bean);
 	}
 	
 	@Override
 	@RestMapping(name = "delete", auth = false, comment = "删除")
-	public RetResult<Integer> delete(Customer userMember, int id) {
+	public RetResult<Integer> delete(Customer customer, int id) {
 		// TODO Auto-generated method stub
-		return super.delete(userMember, id);
+		return super.delete(customer, id);
 	}
 	
 	@Override
 	@RestMapping(name = "queryById", auth = false, comment = "根据ID加载数据")
-	public RetResult<Goods> queryById(Customer userMember, int id) {
+	public RetResult<Goods> queryById(Customer customer, int id) {
 		// TODO Auto-generated method stub
 		Goods goodInfo = source.find(Goods.class, id); // 查询当前对象是否被收藏过
 		if(goodInfo != null ) {
 			Wishlist wishlist = source.find(Wishlist.class, 
 						FilterNode
-							.create("customerid", userMember.getCustomerid())
+							.create("customerid", customer.getCustomerid())
 							.create("goodsid", id));
 			if (null != wishlist) {
 				goodInfo.setWishlistid(wishlist.getWishlistid());

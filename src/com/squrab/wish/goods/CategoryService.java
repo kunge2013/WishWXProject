@@ -15,20 +15,20 @@ import com.squrab.wish.bean.CategoryBean;
 import com.squrab.wish.core.CrudBaseService;
 import com.squrab.wish.model.Category;
 import com.squrab.wish.model.Services;
-import com.squrab.wish.model.UserMember;
+import com.squrab.wish.model.Customer;
 
 /**
  * @author 86176
  */
 
 @RestService(name = "categoryInfo", moduleid = Services.MODULE_USER, comment = "【OSS系统】分类管理")
-public class CategoryService extends CrudBaseService<UserMember, Category, CategoryBean> {
+public class CategoryService extends CrudBaseService<Customer, Category, CategoryBean> {
 	
 
 	@Override
 	@RestMapping(name = "create", auth = false, comment = "新增修改")
-	public RetResult<Integer> create(UserMember userMember, Category bean) {
-		return super.create(userMember, bean);
+	public RetResult<Integer> create(Customer customer, Category bean) {
+		return super.create(customer, bean);
 	}
 	
 	@Override
@@ -38,23 +38,23 @@ public class CategoryService extends CrudBaseService<UserMember, Category, Categ
 	}
 	@Override
 	@RestMapping(name = "query",auth = false,  comment = "查询类型列表")
-	protected RetResult<Sheet<Category>> queryForPage(UserMember userMember, Flipper flipper, CategoryBean bean) {
+	protected RetResult<Sheet<Category>> queryForPage(Customer customer, Flipper flipper, CategoryBean bean) {
 		// TODO Auto-generated method stub
-		return super.queryForPage(userMember, flipper, bean);
+		return super.queryForPage(customer, flipper, bean);
 	}
 	
 	@Override
 	@RestMapping(name = "delete", auth = false,  comment = "删除类型信息关联")
-	public RetResult<Integer> delete(UserMember userMember, int id) {
+	public RetResult<Integer> delete(Customer customer, int id) {
 		// TODO Auto-generated method stub
-		return super.delete(userMember, id);
+		return super.delete(customer, id);
 	}
 	
 	@Override
 	@RestMapping(name = "queryById", auth = false, comment = "根据ID查询")
-	public RetResult<Category> queryById(UserMember userMember, int id) {
+	public RetResult<Category> queryById(Customer customer, int id) {
 		// TODO Auto-generated method stub
-		return super.queryById(userMember, id);
+		return super.queryById(customer, id);
 	}
 
 

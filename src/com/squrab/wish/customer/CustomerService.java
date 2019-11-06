@@ -58,30 +58,30 @@ public class CustomerService extends CrudBaseService<Customer, Customer, Custome
 
 	@Override
 	@RestMapping(name = "create", auth = false, comment = "新增")
-	public RetResult<Integer> create(Customer userMember, Customer bean) {
+	public RetResult<Integer> create(Customer customer, Customer bean) {
 		// TODO Auto-generated method stub
-		return super.create(userMember, bean);
+		return super.create(customer, bean);
 	}
 
 	@Override
 	@RestMapping(name = "queryById", auth = false, comment = "根据ID加载数据")
-	public RetResult<Customer> queryById(Customer userMember, int id) {
+	public RetResult<Customer> queryById(Customer customer, int id) {
 		// TODO Auto-generated method stub
-		return super.queryById(userMember, id);
+		return super.queryById(customer, id);
 	}
 
 	@Override
 	@RestMapping(name = "query", auth = true, comment = "查询列表")
-	protected RetResult<Sheet<Customer>> queryForPage(Customer userMember, Flipper flipper, CustomerBean bean) {
+	protected RetResult<Sheet<Customer>> queryForPage(Customer customer, Flipper flipper, CustomerBean bean) {
 		// TODO Auto-generated method stub
-		return super.queryForPage(userMember, flipper, bean);
+		return super.queryForPage(customer, flipper, bean);
 	}
 
 	@Override
 	@RestMapping(name = "delete", auth = false, comment = "删除")
-	public RetResult<Integer> delete(Customer userMember, int id) {
+	public RetResult<Integer> delete(Customer customer, int id) {
 		// TODO Auto-generated method stub
-		return super.delete(userMember, id);
+		return super.delete(customer, id);
 	}
 
 	@RestMapping(name = "findCustomerByopenid", auth = false, comment = "根据openid查询用户信息")
