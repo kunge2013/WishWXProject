@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8"><title>接口文档(apidoc生成)</title>
+        <style type="text/css">
+            body {text-align: center;margin:auto;}
+            a{text-decoration: none;}
+            .table {margin: auto;border-collapse: collapse;border-spacing: 0;display: block;width: 100%;overflow: auto;word-break: normal;word-break: keep-all;}
+            .table td,.table th{padding: 0.2rem 0.8rem 0.2rem 0.8rem;border: 1px solid #aaa;}
+            .table td {text-align: left;}
+            .s {font-size: 0.8rem; vertical-align: middle;}
+            .subtable {border-spacing: 0;border: 0;margin:0;}
+            .subtable td{border: 0;padding: 0 0 0 10px;}
+            .typetable {border-spacing: 0;border: 0;margin:0;}
+            .typetable td{border: 0;padding: 2px 20px 2px 10px;}
+            .typetable .l{border-bottom: 1px solid red;}
+        </style>
+    </head>
+    <body>
+
+        <script>
+            var createhtml = function (jsoncontent) {
+                var classmap = jsoncontent.types;
+                var html = [];
+                html.push('<div style="width:' + Math.floor(window.screen.width * 0.9) + 'px;margin:0 auto;text-align: center;">');
+                html.push('<br/><br/><table class="table" align="center">');
+                for (var i = 0; i < jsoncontent.servers.length; i++) {
+                    var servlets = jsoncontent.servers[i].servlets;
+                    if (servlets.length && (servlets[0].comment || "").indexOf("【") === 0) {
+                        servlets.sort(function (a, b) {
+                            return a.comment > b.comment ? -1 : (a.comment == b.comment ? 0 : 1);
+                        });
+                    }
+                    for (var j = 0; j < servlets.length; j++) {
+                        var servlet = servlets[j];
+                        if (html.length > 2) html.push(' <tr><th colspan="5" style="border-bottom:0;">&nbsp;</th></tr>');
+                        html.push(' <tr><th colspan="5" style="border-top:' + ((html.length > 2) ? 0 : 1) + ';">' + (servlet.comment || '未知模块') + '</th></tr>');
+                        html.push(' <tr><th>请求URL</th><th>描 述</th><th>鉴 权</th><th>参 数 <span style="font-size:12px;">(粗体: 必填项; 红色: Header; 蓝色: Cookie)</span></th><th>输 出</th></tr>');
+                        for (var k = 0; k < servlet.mappings.length; k++) {
+                            var action = servlet.mappings[k];
+                            html.push(' <tr>');
+                            html.push('<td style="color:#ff00ff;">' + action.url + '</td>');
+                            html.push('<td>' + action.comment + '</td>');
+                            html.push('<td class="s" style="width:80px;">模块ID: ' + servlet.moduleid + '<br/>操作ID: ' + action.actionid + '<br/>需鉴权: ' + (action.auth ? '<font style="font-weight:bold;color:green;">true</font>' : '<font color=red>false</font>') + '</td>');
+                            var paramshtml = [];
+                            paramshtml.push('<table class="subtable">');
+                            for (var p = 0; p < action.params.length; p++) {
+                                var param = action.params[p];
+                                var t = param.type.substring(param.type.lastIndexOf('.') + 1);
+                                if (classmap[param.type.replace('[]', '')]) {
+                                    t = '<a href="#' + param.type.replace('[]', '') + '">' + t + '</a>';
+                                }
+                                if (param.name == '&') {
+                                    paramshtml.push('<tr><td style="font-size:12px;">内置 </td><td> ' + t + '</td><td> 当前用户</td></tr>');
+                                } else {
+                                    var w = param.required ? "font-weight:bold;" : "";
+                                    var c = ' style="' + w + '"';
+                                    if (param.src == "HEADER") c = ' style="color:red;' + w + '"';
+                                    if (param.src == "COOKIE") c = ' style="color:blue;' + w + '"';
+                                    paramshtml.push('<tr><td ' + c + '> ' + param.name + ' </td><td> ' + t + '</td><td> ' + param.comment + '</td></tr>');
+                                }
+                            }
+                            paramshtml.push('</table>');
+                            html.push('<td class="s" style="padding:0 5px;">' + paramshtml.join('') + '</td>');
+                            var rs = [];
+                            rs.push(action.result.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/([a-zA-Z0-9_\$]+\.)+/g, ""));
+                            var results = action.results || [];
+                            for (var r = 0; r < results.length; r++) {
+                                rs.push('<a href="#' + results[r].replace('[]', '') + '">' + results[r].replace(/([a-zA-Z0-9_\$]+\.)+/g, "") + '</a>');
+                            }
+                            html.push('<td>' + rs.join("<br/>") + '</td>');
+                            html.push('</tr>');
+                        }
+                    }
+                }
+                for (var type in classmap) {
+                    html.push(' <tr><th colspan="5" style="border-bottom:0;">&nbsp;</th></tr>');
+                    html.push(' <tr id="' + type + '"><th colspan="5" style="border-top:0;">' + type + '</th></tr>');
+                    html.push(' <tr><td colspan="5"><table class="typetable">');
+                    for (var fieldname in classmap[type]) {
+                        var field = classmap[type][fieldname];
+                        var t = field.type.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\$/g, ".").replace(/([a-zA-Z0-9_\$]+\.)+/g, "");
+                        if (t == 'boolean' || t == 'short' || t == 'int' || t == 'long' || t == 'float' || t == 'double'
+                                || t == 'boolean[]' || t == 'short[]' || t == 'int[]' || t == 'long[]' || t == 'float[]' || t == 'double[]') {
+                            t = '<font color=blue>' + t + '</font>';
+                        } else if (t == 'String' || t == 'String[]' || t == 'LongRange' || t.indexOf('Map&lt;') === 0) {
+                            t = '<font color=red>' + t + '</font>';
+                        }
+                        var c = (field.comment || '');
+                        if (field.primary) {
+                            c = '【主键】 ' + c;
+                        } else if (!field.updatable) {
+                            c = '【只读】 ' + c;
+                        }
+                        html.push(' <tr class="l"><td>' + fieldname + '</td><td>' + t + '</td><td colspan="2">' + c + '</td></tr>');
+                    }
+                    html.push(' </table></td></tr>');
+                }
+                html.push('</table><br/><br/><br/>');
+                html.push('</div>');
+                return html.join('');
+            };
+        </script>
+
+        <script>
+            var jsoncontent = {"servers":[{"address":"0.0.0.0:6060","servlets":[{"urlregs":["/dir/*"],"moduleid":0,"name":"","comment":"静态资源获取服务","mappings":[{"url":"/dir/","auth":true,"actionid":0,"comment":"静态资源获取根路径，仅供开发阶段使用","params":[],"results":[],"result":"Object"}]},{"urlregs":["/pipes/upload/*"],"moduleid":0,"name":"","comment":"资源上传服务","mappings":[{"url":"/pipes/upload/face","auth":true,"actionid":0,"comment":"上传头像 以正方形规格存储","params":[],"results":[],"result":"Object"},{"url":"/pipes/upload/filesroot","auth":true,"actionid":0,"comment":"获取资源路径，仅供内部系统使用","params":[],"results":[],"result":"Object"}]},{"urlregs":["/pipes/user/*"],"moduleid":0,"name":"","comment":"","mappings":[{"url":"/pipes/user/checkaccount/","auth":false,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/checkcode","auth":false,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/checkemail/","auth":false,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/checkmobile/","auth":false,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/info/","auth":true,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/js/mydetail","auth":false,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/js/myinfo","auth":false,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/login","auth":false,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/logout","auth":false,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/mydetail","auth":true,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/myinfo","auth":true,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/qqlogin","auth":false,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/signup","auth":false,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/smslgncode","auth":false,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/smsmobcode","auth":true,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/smsodmcode","auth":true,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/smspwdcode","auth":true,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/smsregcode","auth":false,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/updateapptoken","auth":true,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/updategender/","auth":true,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/updatemobile","auth":true,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/updatepwd","auth":true,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/updateusername","auth":true,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/updatewxid","auth":false,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/wxlogin","auth":false,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"},{"url":"/pipes/user/wxopenid","auth":false,"actionid":0,"comment":"","params":[],"results":[],"result":"Object"}]}]},{"address":"0.0.0.0:20910","servlets":[{"urlregs":["/watch/filter/*"],"moduleid":0,"name":"","comment":"","mappings":[{"url":"/watch/filter/addfilter","auth":false,"actionid":0,"comment":"动态增加Filter","params":[{"name":"jar","radix":10,"type":"byte[]","src":"PARAMETER","comment":"","required":true},{"name":"server","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"Server节点名","required":true},{"name":"type","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"Filter类名","required":true}],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/filter/test1","auth":false,"actionid":0,"comment":"预留","params":[],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/filter/test2","auth":false,"actionid":0,"comment":"预留","params":[],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/filter/test3","auth":false,"actionid":0,"comment":"预留","params":[],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/filter/test4","auth":false,"actionid":0,"comment":"预留","params":[],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/filter/test5","auth":false,"actionid":0,"comment":"预留","params":[],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/filter/test6","auth":false,"actionid":0,"comment":"预留","params":[],"results":[],"result":"org.redkale.service.RetResult"}]},{"urlregs":["/watch/server/*"],"moduleid":0,"name":"","comment":"","mappings":[{"url":"/watch/server/changeaddress","auth":true,"actionid":0,"comment":"更改Server的监听地址和端口","params":[{"name":"#port:","radix":10,"type":"int","src":"PARAMETER","comment":"","required":true},{"name":"#newhost:","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"","required":true},{"name":"#newport:","radix":10,"type":"int","src":"PARAMETER","comment":"","required":true}],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/server/info","auth":true,"actionid":0,"comment":"单个Server信息查询","params":[{"name":"#port:","radix":10,"type":"int","src":"PARAMETER","comment":"","required":true}],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/server/infos","auth":true,"actionid":0,"comment":"Server信息查询","params":[],"results":[],"result":"org.redkale.service.RetResult"}]},{"urlregs":["/watch/service/*"],"moduleid":0,"name":"","comment":"","mappings":[{"url":"/watch/service/find","auth":false,"actionid":0,"comment":"查找Service","params":[{"name":"name","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"Service的资源名","required":true},{"name":"type","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"Service的类名","required":true}],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/service/getfield","auth":false,"actionid":0,"comment":"查询Service中指定字段的内容","params":[{"name":"name","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"Service的资源名","required":true},{"name":"type","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"Service的类名","required":true},{"name":"field","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"字段名","required":true}],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/service/load","auth":false,"actionid":0,"comment":"动态增加Service","params":[{"name":"type","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"Service的类名","required":true},{"name":"jar","radix":10,"type":"byte[]","src":"PARAMETER","comment":"","required":true}],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/service/reload","auth":false,"actionid":0,"comment":"重新加载Service","params":[{"name":"name","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"Service的资源名","required":true},{"name":"type","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"Service的类名","required":true}],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/service/runmethod","auth":false,"actionid":0,"comment":"调用Service中指定方法","params":[{"name":"name","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"Service的资源名","required":true},{"name":"type","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"Service的类名","required":true},{"name":"method","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"Service的方法名","required":true},{"name":"params","radix":10,"type":"java.util.List","src":"PARAMETER","comment":"方法的参数值","required":true},{"name":"paramtypes","radix":10,"type":"java.util.List","src":"PARAMETER","comment":"方法的参数数据类型","required":true}],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/service/setfield","auth":false,"actionid":0,"comment":"设置Service中指定字段的内容","params":[{"name":"name","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"Service的资源名","required":true},{"name":"type","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"Service的类名","required":true},{"name":"field","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"字段名","required":true},{"name":"value","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"字段值","required":true}],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/service/stop","auth":false,"actionid":0,"comment":"动态停止Service","params":[{"name":"name","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"Service的资源名","required":true},{"name":"type","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"Service的类名","required":true}],"results":[],"result":"org.redkale.service.RetResult"}]},{"urlregs":["/watch/source/*"],"moduleid":0,"name":"","comment":"","mappings":[{"url":"/watch/source/change","auth":false,"actionid":0,"comment":"动态更改DataSource的配置","params":[{"name":"name","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"DataSource的标识","required":true},{"name":"properties","radix":10,"type":"java.util.Properties","src":"PARAMETER","comment":"配置","required":true},{"name":"xmlpath","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"配置文件路径","required":true}],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/source/test1","auth":false,"actionid":0,"comment":"预留","params":[],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/source/test2","auth":false,"actionid":0,"comment":"预留","params":[],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/source/test3","auth":false,"actionid":0,"comment":"预留","params":[],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/source/test4","auth":false,"actionid":0,"comment":"预留","params":[],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/source/test5","auth":false,"actionid":0,"comment":"预留","params":[],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/source/test6","auth":false,"actionid":0,"comment":"预留","params":[],"results":[],"result":"org.redkale.service.RetResult"}]},{"urlregs":["/watch/transport/*"],"moduleid":0,"name":"","comment":"","mappings":[{"url":"/watch/transport/addnode","auth":false,"actionid":0,"comment":"动态增加指定Group的Node节点","params":[{"name":"group","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"Group节点名","required":true},{"name":"addr","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"节点IP","required":true},{"name":"port","radix":10,"type":"int","src":"PARAMETER","comment":"节点端口","required":true}],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/transport/listnodes","auth":false,"actionid":0,"comment":"获取所有Node节点","params":[],"results":[],"result":"java.util.List<org.redkale.net.TransportGroupInfo>"},{"url":"/watch/transport/removenode","auth":false,"actionid":0,"comment":"动态删除指定Group的Node节点","params":[{"name":"group","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"Group节点名","required":true},{"name":"addr","radix":10,"type":"java.lang.String","src":"PARAMETER","comment":"节点IP","required":true},{"name":"port","radix":10,"type":"int","src":"PARAMETER","comment":"节点端口","required":true}],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/transport/test1","auth":false,"actionid":0,"comment":"预留","params":[],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/transport/test2","auth":false,"actionid":0,"comment":"预留","params":[],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/transport/test3","auth":false,"actionid":0,"comment":"预留","params":[],"results":[],"result":"org.redkale.service.RetResult"},{"url":"/watch/transport/test4","auth":false,"actionid":0,"comment":"预留","params":[],"results":[],"result":"org.redkale.service.RetResult"}]}]}],"types":{}}; //这里必须要用单引号引起来
+            document.write(createhtml(jsoncontent));
+        </script>
+    </body>
+</html>
