@@ -141,10 +141,6 @@ public class CustomerService extends CrudBaseService<Customer, Customer, Custome
 		return customer;
 	}
 
-	public RetResult<Customer> login(CustomerLoginBean bean) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Comment("绑定电话号码")
 	@RestMapping(name = "bindMobile", auth = true, comment = "绑定电话号码")
