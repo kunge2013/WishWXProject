@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 80017
 File Encoding         : 65001
 
-Date: 2019-11-05 17:53:54
+Date: 2019-11-07 15:07:25
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -354,6 +354,25 @@ CREATE TABLE `randomcodehis` (
 
 -- ----------------------------
 -- Records of randomcodehis
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for recaddress
+-- ----------------------------
+DROP TABLE IF EXISTS `recaddress`;
+CREATE TABLE `recaddress` (
+  `recaddressid` int(8) NOT NULL AUTO_INCREMENT COMMENT '收货地址ID',
+  `customerid` int(8) DEFAULT NULL COMMENT '用戶ID',
+  `recusername` varchar(20) DEFAULT NULL COMMENT '收货人姓名',
+  `recuserphone` varchar(15) DEFAULT NULL COMMENT '收货人电话',
+  `recaddress` varchar(100) DEFAULT NULL COMMENT '详细地址',
+  `defaultaddress` int(2) DEFAULT NULL COMMENT '是否是默认地址  10 是 20 不是',
+  `createtime` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`recaddressid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- ----------------------------
+-- Records of recaddress
 -- ----------------------------
 
 -- ----------------------------
