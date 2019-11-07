@@ -25,10 +25,10 @@ public class SmallProcessService extends BaseService {
 	public JsonConvert convert;
 	
 	@Resource(name = "weixin.sp.appid")
-	private String appId = "wx8288e06d6753207c33";
+	private String appId = "wx7735c756b9194811";
 	
 	@Resource(name = "weixin.sp.appsecret")
-	private String appSecret = "6f3e3db163f0627b9853d53c7fe88f3c";
+	private String appSecret = "e57cf70ff076ebfd2af2c9431d0f7181";
 	
 	/**
 	 * 	小程序认证

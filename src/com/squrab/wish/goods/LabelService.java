@@ -8,11 +8,13 @@ package com.squrab.wish.goods;
 import org.redkale.net.http.RestMapping;
 import org.redkale.net.http.RestService;
 import org.redkale.service.RetResult;
+import org.redkale.source.FilterNode;
 import org.redkale.source.Flipper;
 import org.redkale.util.Comment;
 import org.redkale.util.Sheet;
 
 import com.squrab.wish.bean.LabelBean;
+import com.squrab.wish.constant.RetCodes;
 import com.squrab.wish.core.CrudBaseService;
 import com.squrab.wish.model.Label;
 import com.squrab.wish.model.Services;
@@ -29,7 +31,16 @@ public class LabelService extends CrudBaseService<Customer, Label, LabelBean> {
 	public RetResult<Integer> create(Customer customer, Label bean) {
 		return super.create(customer, bean);
 	}
+	
 
+	@Override
+	protected int beforeSave(Label bean) {
+		// TODO Auto-generated method stub
+		return super.beforeSave(bean);
+	}
+	
+
+	
 	@Override
 	protected boolean isUpdate(Label bean) {
 		// TODO Auto-generated method stub

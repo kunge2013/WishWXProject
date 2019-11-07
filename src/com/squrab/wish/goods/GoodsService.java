@@ -26,6 +26,7 @@ import com.squrab.wish.constant.RetCodes;
 import com.squrab.wish.core.CrudBaseService;
 import com.squrab.wish.model.Customer;
 import com.squrab.wish.model.Goods;
+import com.squrab.wish.model.Label;
 import com.squrab.wish.model.Services;
 import com.squrab.wish.model.Wishlist;
 
@@ -40,16 +41,21 @@ public class GoodsService extends CrudBaseService<Customer, Goods, GoodsBean> {
 	@Comment("序列化工具")
 	@Resource
 	protected JsonConvert convert;
-
-	@Comment("心愿清单服务")
-	@Resource
-	private WishlistService wishlistService;
 	
 	@Override
 	@RestMapping(name = "create", auth = false, comment = "新增")
 	public RetResult<Integer> create(Customer customer, Goods bean) {
 		// TODO Auto-generated method stub
 		return super.create(customer, bean);
+	}
+	
+	@RestMapping(name = "increasebindgoodsnum", auth = false, comment = "增加绑定商品的个数")
+	public RetResult<Integer> increasebindgoodsnum(Customer customer, Label bean) {
+		Label label = source.find(Label.class, FilterNode.create("labelname", bean.getLabelname()));
+		if (null == label) return RetResult.success();
+		bean = label.increbindgoodsnum(bean.getBindgoodsnum());//计算增加减少
+		source.update(bean);
+		return RetResult.success();
 	}
 	
 	@Override

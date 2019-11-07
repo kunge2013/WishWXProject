@@ -115,12 +115,13 @@ public class CustomerService extends CrudBaseService<Customer, Customer, Custome
 		if (map.containsKey("openid")) {
 			Customer entity = new Customer();
 			String openId = String.valueOf(map.get("openid"));
-			Customer customer = source.find(Customer.class, FilterNode.create("openid", openId));// 如果当前账户之前没有注册那么就进行注册
+			Customer customer = source.find(Customer.class, FilterNode.create("wxopenid", openId));// 如果当前账户之前没有注册那么就进行注册
 			if (customer == null) {
 				String sessionKey = String.valueOf(map.get("session_key"));
 				entity.setWxopenid(openId);
 				entity.setWxsessionkey(sessionKey);
 				entity.setCreatetime(System.currentTimeMillis());
+				source.insert(entity);
 			}
 			return RetResult.success(map);
 		}
