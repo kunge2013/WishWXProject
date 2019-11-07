@@ -1,11 +1,13 @@
 package com.squrab.wish.customer;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 
+import org.redkale.boot.Application;
 import org.redkale.convert.json.JsonConvert;
 import org.redkale.net.http.HttpContext;
 import org.redkale.net.http.HttpMapping;
@@ -13,17 +15,26 @@ import org.redkale.net.http.HttpRequest;
 import org.redkale.net.http.HttpResponse;
 import org.redkale.net.http.HttpServlet;
 import org.redkale.net.http.HttpUserType;
+import org.redkale.net.http.RestMapping;
 import org.redkale.net.http.WebServlet;
 import org.redkale.service.RetResult;
+import org.redkale.source.Flipper;
 import org.redkale.util.AnyValue;
+import org.redkale.util.Comment;
+import org.redkale.util.Sheet;
 
+import com.squrab.wish.bean.CustomerBean;
+import com.squrab.wish.bean.RecAddressBean;
 import com.squrab.wish.constant.RetCodes;
 import com.squrab.wish.model.Customer;
 import com.squrab.wish.model.RandomCode;
+import com.squrab.wish.model.RecAddress;
 import com.squrab.wish.model.UserInfo;
+import com.squrab.wish.service.CustomerService;
+import com.squrab.wish.service.LabelService;
+import com.squrab.wish.service.RecAddressService;
 
 @HttpUserType(Customer.class)
-@WebServlet(value = {"/customer/*"}, repair = false, comment = "商品访问服务")
 public class CustomerServlet extends HttpServlet {
 	
 	public static final String COOKIE_AUTOLOGIN = "UNF";
@@ -47,7 +58,13 @@ public class CustomerServlet extends HttpServlet {
 
 	@Resource
 	private CustomerService service;
+	
+	@Resource
+	private LabelService labelService;
 
+	@Resource
+	private RecAddressService recAddressService;
+	
 	@Override
 	public void init(HttpContext context, AnyValue config) {
 		super.init(context, config);
@@ -99,4 +116,38 @@ public class CustomerServlet extends HttpServlet {
         if (finest) logger.finest(req.getRequestURI() + ", mobile = " + mobile + "---->" + rr);
         resp.finishJson(rr);
     }
+    
+    @RestMapping(name = "fetchOpenid", auth = true, comment = "获取微信openId")
+	public RetResult<Map<String, Object>> fetchOpenid(String code) {
+		return service.fetchOpenid(code);
+	}
+    
+    @Comment("绑定电话号码")
+	@RestMapping(name = "bindMobile", auth = true, comment = "绑定电话号码")
+	public RetResult<Customer> bindMobile(CustomerBean bean) {
+		return service.bindMobile(bean);
+	}
+   
+    @Comment("添加标签到用户表字段以分号分割")
+  	@RestMapping(name = "addLabels", auth = true, comment = "添加标签到用户表字段以分号分割")
+  	public RetResult<Integer> addLabels(Customer bean) {
+  		return service.create(bean);
+  	}
+    
+    /**********************************用户收货地址************************************************/
+    @Comment("用户收获地址绑定")
+  	@RestMapping(name = "bindRecAddress", auth = true, comment = "用户收获地址绑定")
+    public RetResult<Integer> bindRecAddress(Customer customer, RecAddress bean) {
+		return recAddressService.create(customer, bean);
+	}
+    
+    @Comment("分页查询")
+   	@RestMapping(name = "queryRecAddress", auth = false, comment = "查询收货地址列表")
+   	protected RetResult<Sheet<RecAddress>> queryRecAddress(Flipper flipper, RecAddressBean bean) {
+   		// TODO Auto-generated method stub
+   		return recAddressService.queryForPage(flipper, bean);
+   	}
+    public static void main(String[] args) throws Exception {
+		Application.main(null);
+	}
 }
