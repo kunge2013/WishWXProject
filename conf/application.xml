@@ -31,13 +31,13 @@
        
        <!-- <rest path="/wxpipes" base="com.squrab.wish.customer.CustomerServlet" autoload="true"/> -->
  		<rest path="/wxpipes" base="com.squrab.wish.customer.CustomerServlet" autoload="true">
-        	<service  value = "com.squrab.wish.customer.CustomerService"/>
+        	<!-- <service  value = "com.squrab.wish.customer.CustomerService"/>
         	<service  value = "com.squrab.wish.banner.BannerService"/>
         	<service  value = "com.squrab.wish.goods.GoodsService"/>
         	<service  value = "com.squrab.wish.goods.CategoryService"/>
         	<service  value = "com.squrab.wish.goods.GiftBasketService"/>
         	<service  value = "com.squrab.wish.goods.LabelService"/>
-        	<service  value = "com.squrab.wish.goods.WishlistService"/>
+        	<service  value = "com.squrab.wish.goods.WishlistService"/> -->
         </rest> 
         
       <!--   <rest path="/wxpipes" base="com.squrab.wish.merchant.MerchantServlet" autoload="true">
