@@ -17,7 +17,7 @@ import com.squrab.wish.model.Customer;
 import com.squrab.wish.model.RecAddress;
 import com.squrab.wish.model.Services;
 @RestService(name = "recaddress", moduleid = Services.MODULE_USER, comment = "【微信后台系统】收货地址管理")
-public class RecAddressService extends CrudBaseService<Customer, RecAddress, RecAddressBean>{
+public class RecAddressService extends CrudBaseService<Customer, RecAddress, RecAddressBean> {
 
 	@Override
 	@RestMapping(name = "create", auth = true, comment = "新增")
@@ -39,7 +39,7 @@ public class RecAddressService extends CrudBaseService<Customer, RecAddress, Rec
 		if (recUserName == null || recUserName.isBlank()) return RetCodes.RET_RECUSERNAME_EXISTENCE_ILLEGAL;
 		if (recAddress == null || recAddress.isBlank()) return RetCodes.RET_RECADDRESS_EXISTENCE_ILLEGAL;
 		if (recPhone == null || recPhone.isBlank()) return RetCodes.RET_RECPHONE_EXISTENCE_ILLEGAL;
-		// 校验 修改地址
+		// 校验 修改默认地址
 		if (isUpdate(bean)) {
 			// 判断
 			int customerid = bean.getCustomerid();
