@@ -16,7 +16,6 @@ import org.redkale.net.http.HttpResponse;
 import org.redkale.net.http.HttpServlet;
 import org.redkale.net.http.HttpUserType;
 import org.redkale.net.http.RestMapping;
-import org.redkale.net.http.WebServlet;
 import org.redkale.service.RetResult;
 import org.redkale.source.Flipper;
 import org.redkale.util.AnyValue;
