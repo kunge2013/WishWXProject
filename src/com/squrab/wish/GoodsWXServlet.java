@@ -1,8 +1,16 @@
 package com.squrab.wish;
 
 import java.io.IOException;
+import java.security.AlgorithmParameters;
+import java.security.Security;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Base64.Decoder;
 
 import javax.annotation.Resource;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.redkale.net.http.HttpMapping;
 import org.redkale.net.http.HttpRequest;
@@ -32,7 +40,7 @@ import com.squrab.wish.service.LabelService;
 import com.squrab.wish.service.RecAddressService;
 import com.squrab.wish.service.WishlistService;
 
-@WebServlet(value = { "/*" }, repair = false, comment = "商品访问服务")
+@WebServlet(value = { "/wxpipes/*" }, repair = false, comment = "商品访问服务")
 public class GoodsWXServlet extends CustomerServlet {
 
 	@Resource
@@ -202,4 +210,49 @@ public class GoodsWXServlet extends CustomerServlet {
 			logger.finest(req.getRequestURI() + ", mobile = " + mobile + "---->" + rr);
 		resp.finishJson(rr);
 	}
+	
+	
+	@HttpMapping(auth = false, url = "/customer/fetchPhoneNumber", comment = "获取手机号")
+	public void fetchPhoneNumber(HttpRequest req, HttpResponse resp) throws IOException {
+		String encryptedData = req.getRequstURIPath("encryptedData:", req.getParameter("encryptedData"));
+		String sessionKey = req.getRequstURIPath("sessionKey:", req.getParameter("sessionKey"));
+		String iv = req.getRequstURIPath("iv", req.getParameter("iv"));
+		resp.finish(RetResult.success(getPhoneNumber(encryptedData, sessionKey, iv)));
+	} 
+
+	public Object getPhoneNumber(String encryptedData, String session_key, String iv) {
+			Decoder decode = Base64.getDecoder();
+			 // 被加密的数据
+            byte[] dataByte = decode.decode(encryptedData);
+            // 加密秘钥
+            byte[] keyByte = decode.decode(session_key);
+            // 偏移量
+            byte[] ivByte = decode.decode(iv);
+            try {
+                // 如果密钥不足16位，那么就补足.  这个if 中的内容很重要
+                int base = 16;
+                if (keyByte.length % base != 0) {
+                    int groups = keyByte.length / base + (keyByte.length % base != 0 ? 1 : 0);
+                    byte[] temp = new byte[groups * base];
+                    Arrays.fill(temp, (byte) 0);
+                    System.arraycopy(keyByte, 0, temp, 0, keyByte.length);
+                    keyByte = temp;
+                }
+                // 初始化
+//                Security.addProvider(new BouncyCastleProvider());
+                Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+                SecretKeySpec spec = new SecretKeySpec(keyByte, "AES");
+                AlgorithmParameters parameters = AlgorithmParameters.getInstance("AES");
+                parameters.init(new IvParameterSpec(ivByte));
+                cipher.init(Cipher.DECRYPT_MODE, spec, parameters);// 初始化
+                byte[] resultByte = cipher.doFinal(dataByte);
+                if (null != resultByte && resultByte.length > 0) {
+                   return new String(resultByte, "UTF-8");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+		}
+
 }
