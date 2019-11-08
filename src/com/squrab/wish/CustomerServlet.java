@@ -1,4 +1,4 @@
-package com.squrab.wish.customer;
+package com.squrab.wish;
 
 import java.io.IOException;
 import java.util.Map;
@@ -56,13 +56,8 @@ public class CustomerServlet extends HttpServlet {
 	protected JsonConvert convert;
 
 	@Resource
-	private CustomerService service;
+	protected CustomerService service;
 	
-	@Resource
-	private LabelService labelService;
-
-	@Resource
-	private RecAddressService recAddressService;
 	
 	@Override
 	public void init(HttpContext context, AnyValue config) {
@@ -94,59 +89,6 @@ public class CustomerServlet extends HttpServlet {
 		response.nextEvent();
 	}
 	
-    /**
-     * 手机号注册绑定
-     * @param req
-     * @param resp
-     * @throws IOException
-     */
-    @HttpMapping(auth = true, url = "/smsregcode")
-    public void smsreg(HttpRequest req, HttpResponse resp) throws IOException {
-        smsvercode(RandomCode.TYPE_SMSREG, req, resp);
-    }
+
     
-    private void smsvercode(final short type, HttpRequest req, HttpResponse resp) throws IOException {
-        String mobile = req.getRequstURIPath("mobile:", req.getParameter("mobile"));
-        if (type == RandomCode.TYPE_SMSODM) { //给原手机号码发送验证短信
-            UserInfo user = req.currentUser();
-            if (user != null) mobile = user.getMobile();
-        }
-        RetResult rr = service.smscode(type, mobile);
-        if (finest) logger.finest(req.getRequestURI() + ", mobile = " + mobile + "---->" + rr);
-        resp.finishJson(rr);
-    }
-    
-    @RestMapping(name = "fetchOpenid", auth = true, comment = "获取微信openId")
-	public RetResult<Map<String, Object>> fetchOpenid(String code) {
-		return service.fetchOpenid(code);
-	}
-    
-    @Comment("绑定电话号码")
-	@RestMapping(name = "bindMobile", auth = true, comment = "绑定电话号码")
-	public RetResult<Customer> bindMobile(CustomerBean bean) {
-		return service.bindMobile(bean);
-	}
-   
-    @Comment("添加标签到用户表字段以分号分割")
-  	@RestMapping(name = "addLabels", auth = true, comment = "添加标签到用户表字段以分号分割")
-  	public RetResult<Integer> addLabels(Customer bean) {
-  		return service.create(bean);
-  	}
-    
-    /**********************************用户收货地址************************************************/
-    @Comment("用户收获地址绑定")
-  	@RestMapping(name = "bindRecAddress", auth = true, comment = "用户收获地址绑定")
-    public RetResult<Integer> bindRecAddress(Customer customer, RecAddress bean) {
-		return recAddressService.create(customer, bean);
-	}
-    
-    @Comment("分页查询")
-   	@RestMapping(name = "queryRecAddress", auth = false, comment = "查询收货地址列表")
-   	protected RetResult<Sheet<RecAddress>> queryRecAddress(Flipper flipper, RecAddressBean bean) {
-   		// TODO Auto-generated method stub
-   		return recAddressService.queryForPage(flipper, bean);
-   	}
-    public static void main(String[] args) throws Exception {
-		Application.main(null);
-	}
 }
